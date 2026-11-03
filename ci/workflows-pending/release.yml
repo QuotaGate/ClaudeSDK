@@ -1,4 +1,4 @@
-name: Release
+name: .github/workflows/ci.yml
 
 # Publishes @quotagate/sdk to npm when a tag like v0.1.0 is pushed (DECISIONS D13).
 # Requires the NPM_TOKEN repository secret: a granular, publish-only npm token.
