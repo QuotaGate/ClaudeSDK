@@ -15,6 +15,7 @@ import { baseParams, createMockAnthropic, decodeBody, tick } from './helpers.js'
 const FINTECH = fileURLToPath(new URL('../examples/policies/fintech.yaml', import.meta.url));
 const SECRET = 'whsec_test_0123456789abcdef';
 const SENSITIVE = ['A99321', 'Summarize this contract', 'meta-secret-xyz', 'IR', 'pw-hunter2'];
+const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 
 interface Harness {
   qg: QuotaGate;
@@ -556,6 +557,10 @@ describe('metadata-only Claude spans (init mode)', () => {
     expect(blob).toContain('"captureContent":false');
     expect(blob).toContain('"metadata":{}');
     expect(blob).toContain('"errorMessage":"Error (HTTP 500)"');
+    // Span and trace ids are random UUIDs, so a short numeric needle such as the card
+    // fragment '4111' can occur inside one by chance (e.g. spanId ...b41111bf21c7).
+    // Strip ids before the substring checks so the assertion tests content leakage only.
+    const withoutIds = (s: string) => s.replace(UUID_RE, '<id>');
     for (const s of [
       'Summarize this contract',
       'pw-hunter2',
@@ -563,10 +568,10 @@ describe('metadata-only Claude spans (init mode)', () => {
       'Here is the summary',
       '4111',
     ]) {
-      expect(blob, s).not.toContain(s);
-      expect(JSON.stringify(events), s).not.toContain(s);
-      expect(posts.join(''), s).not.toContain(s);
-      expect(logs.join('\n'), s).not.toContain(s);
+      expect(withoutIds(blob), s).not.toContain(s);
+      expect(withoutIds(JSON.stringify(events)), s).not.toContain(s);
+      expect(withoutIds(posts.join('')), s).not.toContain(s);
+      expect(withoutIds(logs.join('\n')), s).not.toContain(s);
     }
     // The request rule (pii_detection, warn) from the policy file still runs and is audited.
     const req = events.find(
