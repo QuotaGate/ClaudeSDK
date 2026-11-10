@@ -4,8 +4,8 @@ Operational trust for Claude agents. QuotaGate wraps the Anthropic TypeScript SD
 observability spans, a pre-flight policy engine, and buffered background export, without
 changing how your code calls Claude.
 
-> Status: **pre-release (`0.1.0-dev`)**. Not yet published to npm. The hosted backend is not
-> part of this repository.
+> Status: **`0.1.0`** — first public release (`npm install @quotagate/sdk`). The hosted
+> backend is not part of this repository.
 
 ## What exists today
 

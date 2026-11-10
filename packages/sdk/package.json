@@ -1,6 +1,6 @@
 {
   "name": "@quotagate/sdk",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Operational trust for Claude agents: observability spans, pre-flight policy checks and buffered export for the Anthropic TypeScript SDK.",
   "license": "MIT",
   "author": "Agentic Loops LLC",

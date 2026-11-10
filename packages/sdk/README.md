@@ -15,8 +15,7 @@ const quotagate = new QuotaGate({
 const claude = quotagate.wrap(new Anthropic());
 ```
 
-Pre-release (`0.1.0-dev`). Requires `@anthropic-ai/sdk` >= 0.103.0 as a peer dependency and
-Node.js 18+. Full documentation will ship with v0.1.0; see the
-[repository README](../../README.md) for what exists today.
+Version `0.1.0`. Requires `@anthropic-ai/sdk` >= 0.103.0 as a peer dependency and
+Node.js 18+. See the [repository README](../../README.md) for what exists today.
 
 MIT © Agentic Loops LLC
