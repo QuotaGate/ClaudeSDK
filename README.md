@@ -22,22 +22,27 @@ changing how your code calls Claude.
 - Pre-flight policies: `token_budget`, `cost_budget`, `pii_detection`, `rate_limit`,
   `prompt_injection` (regex heuristics, warn by default). Blocking rules throw
   `PolicyViolationError` before any request is sent to Anthropic.
-- `captureContent: false` to keep prompts and responses out of exported spans.
+- Content capture is off by default: exported spans carry no prompts, responses or tool
+  inputs unless you set `captureContent: true` (changed from the earlier default of `true`).
+- Track B governance (pre-release, see `packages/sdk/docs/GOVERNANCE.md`): `QuotaGate.init()`
+  with a YAML policy file, tool-call guards (`guardTool`, `checkToolCalls`), policy hash and
+  version on metadata-only audit events, and signed violation webhooks. There is no
+  QuotaGate backend for audit events yet: they go only to your `onAuditEvent` callback.
 - `quotagateNoop()`: same `wrap()` shape, returns your client untouched (for tests or opt-out).
 
 ```ts
-import Anthropic from '@anthropic-ai/sdk';
-import { QuotaGate } from '@quotagate/sdk';
+import Anthropic from "@anthropic-ai/sdk";
+import { QuotaGate } from "@quotagate/sdk";
 
 const quotagate = new QuotaGate({
   apiKey: process.env.QUOTAGATE_API_KEY,
   projectId: process.env.QUOTAGATE_PROJECT_ID,
   policies: [
     {
-      policyId: 'output-cap',
-      name: 'Output cap',
-      scope: 'project',
-      rules: [{ type: 'token_budget', params: { maxOutputTokens: 4096 } }],
+      policyId: "output-cap",
+      name: "Output cap",
+      scope: "project",
+      rules: [{ type: "token_budget", params: { maxOutputTokens: 4096 } }],
     },
   ],
 });
@@ -45,8 +50,12 @@ const quotagate = new QuotaGate({
 const claude = quotagate.wrap(new Anthropic());
 
 const msg = await claude.messages.create(
-  { model: 'claude-sonnet-4-5', max_tokens: 1024, messages: [{ role: 'user', content: 'Hi' }] },
-  { quotagate: { traceId: 'run-42', agentId: 'support-bot' } },
+  {
+    model: "claude-sonnet-4-5",
+    max_tokens: 1024,
+    messages: [{ role: "user", content: "Hi" }],
+  },
+  { quotagate: { traceId: "run-42", agentId: "support-bot" } },
 );
 ```
 

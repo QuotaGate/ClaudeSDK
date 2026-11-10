@@ -247,7 +247,11 @@ export interface QuotaGateOptions {
   onFlushError?: 'log' | 'silent';
   /** Inline policies evaluated before every call. */
   policies?: Policy[];
-  /** Capture message/response content. Default true (DECISIONS D9). */
+  /**
+   * Capture message/response content and tool inputs on spans. Default false (decision A3;
+   * previously true under DECISIONS D9). Set true to restore the 0.1.0-dev behaviour.
+   * QuotaGate.init() always uses false.
+   */
   captureContent?: boolean;
   /** Custom fetch implementation (advanced; defaults to global fetch). */
   fetch?: typeof fetch;

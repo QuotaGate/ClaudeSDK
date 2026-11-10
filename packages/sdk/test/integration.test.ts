@@ -79,7 +79,12 @@ describe('QuotaGate SDK integration (Express mock ingest server)', () => {
     });
     const anthropic = createMockAnthropic(response);
     // Default flush settings (2s interval, batch 100): the timer is what must fire in < 3s.
-    const quotagate = new QuotaGate({ apiKey: 'lb_test_key', projectId: 'proj_test', endpoint });
+    const quotagate = new QuotaGate({
+      apiKey: 'lb_test_key',
+      projectId: 'proj_test',
+      endpoint,
+      captureContent: true,
+    }); // A3: content capture is opt-in
     const claude = quotagate.wrap(anthropic);
     const traceId = 'trace-integration-001';
 

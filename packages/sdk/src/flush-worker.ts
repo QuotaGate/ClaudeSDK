@@ -24,6 +24,8 @@ export interface FlushWorkerOptions {
   logger?: Logger;
   /** Suppress failure logging. */
   silent?: boolean;
+  /** Log only counts, never server-provided error details (metadata-only mode). */
+  redactServerDetail?: boolean;
 }
 
 class NonRetryableError extends Error {}
@@ -159,6 +161,10 @@ export class FlushWorker<T = unknown> {
     try {
       const parsed = JSON.parse(text) as { rejected?: unknown; errors?: unknown };
       if (typeof parsed.rejected === 'number' && parsed.rejected > 0) {
+        if (this.opts.redactServerDetail) {
+          this.log(`ingest rejected ${parsed.rejected} span(s)`);
+          return;
+        }
         this.log(
           `ingest rejected ${parsed.rejected} span(s): ${JSON.stringify(parsed.errors ?? []).slice(0, 500)}`,
         );

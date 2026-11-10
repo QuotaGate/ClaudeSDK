@@ -1,0 +1,71 @@
+# QuotaGate example policy — FinTech (account_management and payments tools).
+# Illustrative only: adapt tool names, methods and thresholds to your own tools.
+# Not legal or compliance advice.
+version: '1.2.0'
+rules:
+  - id: no_account_closure
+    description: 'Agent may not close a customer account.'
+    action_patterns:
+      - type: tool_call
+        tool: account_management
+        method: close_account
+    disposition: block
+    escalate_to: compliance_webhook
+
+  - id: no_account_owner_change
+    description: 'Agent may not change the owner of record on an account.'
+    action_patterns:
+      - type: tool_call
+        tool: account_management
+        method: update_owner
+    disposition: block
+    escalate_to: compliance_webhook
+
+  - id: account_limit_increase_review
+    description: 'Credit limit increases above $10,000 need human approval.'
+    action_patterns:
+      - type: tool_call
+        tool: account_management
+        method: set_credit_limit
+        param_conditions:
+          new_limit:
+            gt: 10000
+    disposition: require_human_review
+
+  - id: transfer_limit
+    description: 'Agent may not initiate transfers over $5,000 without human approval.'
+    action_patterns:
+      - type: tool_call
+        tool: payments
+        method: initiate_transfer
+        param_conditions:
+          amount:
+            gt: 5000
+    disposition: require_human_review
+
+  - id: sanctioned_destination
+    description: 'Transfers to embargoed destinations are blocked.'
+    action_patterns:
+      - type: tool_call
+        tool: payments
+        method: initiate_transfer
+        param_conditions:
+          beneficiary.country:
+            in: ['CU', 'IR', 'KP', 'SY']
+    disposition: block
+    escalate_to: compliance_webhook
+
+  - id: account_freeze_notice
+    description: 'Freezing an account is allowed but flagged for compliance.'
+    action_patterns:
+      - type: tool_call
+        tool: account_management
+        method: freeze_account
+    disposition: warn
+
+request_rules:
+  - type: pii_detection
+    name: card_numbers_in_prompt
+    params:
+      patterns: [credit_card, ssn]
+      action: warn

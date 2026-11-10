@@ -1,0 +1,44 @@
+# QuotaGate example policy — LegalTech (document_signing tool).
+# Illustrative only: adapt tool names, methods and thresholds to your own tools.
+# Not legal advice; a supervising attorney decides what the agent may do.
+version: '0.3.1'
+rules:
+  - id: no_signature_on_behalf
+    description: 'Agent may not apply a signature on behalf of an attorney or client.'
+    action_patterns:
+      - type: tool_call
+        tool: document_signing
+        method: apply_signature
+    disposition: block
+    escalate_to: compliance_webhook
+
+  - id: send_for_signature_review
+    description: 'Sending a document for client signature needs attorney approval.'
+    action_patterns:
+      - type: tool_call
+        tool: document_signing
+        method: send_envelope
+    disposition: require_human_review
+
+  - id: no_void_executed
+    description: 'Agent may not void an envelope that is already completed.'
+    action_patterns:
+      - type: tool_call
+        tool: document_signing
+        method: void_envelope
+        param_conditions:
+          envelope_status:
+            eq: completed
+    disposition: block
+    escalate_to: compliance_webhook
+
+  - id: external_recipient_warning
+    description: 'Recipients outside the firm domain are flagged.'
+    action_patterns:
+      - type: tool_call
+        tool: document_signing
+        method: send_envelope
+        param_conditions:
+          recipient_email:
+            matches: "@(?!examplefirm\\.com$)"
+    disposition: warn
