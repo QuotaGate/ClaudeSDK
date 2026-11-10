@@ -9,7 +9,7 @@ const workerOpts = {
   url: 'http://ingest.test/v1/ingest',
   apiKey: 'lb_test_key',
   projectId: 'proj_test',
-  sdkVersion: '0.1.0-dev',
+  sdkVersion: '0.1.0',
   compress: false,
 };
 
@@ -108,7 +108,7 @@ describe('FlushWorker', () => {
     await worker.flush();
     expect(bodies).toHaveLength(2);
     for (const body of bodies) {
-      expect(body.sdkVersion).toBe('0.1.0-dev');
+      expect(body.sdkVersion).toBe('0.1.0');
       expect(body.projectId).toBe('proj_test');
     }
     const init = fn.mock.calls[0]![1]!;
