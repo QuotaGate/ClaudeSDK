@@ -15,6 +15,11 @@ export interface TracerOptions {
   captureContent: boolean;
   onPolicyError: 'log' | 'block';
   logger: Logger;
+  /**
+   * Metadata-only mode (set by QuotaGate.init): span metadata is dropped and error
+   * messages are reduced to an error class label, so no free-form text leaves the process.
+   */
+  metadataOnly?: boolean;
 }
 
 /** Span fields known before the Anthropic call. */
@@ -147,7 +152,8 @@ export class SpanHandle {
     this.finished = true;
     const completedAt = Date.now();
     const partial = this.accumulator.message;
-    defer(() => this.emit(() => this.buildSpan(completedAt, partial, errorMessage(err))));
+    const text = this.opts.metadataOnly ? errorLabel(err) : errorMessage(err);
+    defer(() => this.emit(() => this.buildSpan(completedAt, partial, text)));
   }
 
   /** Feed raw stream events (RawMessageStreamEvent). Finalizes on message_stop. */
@@ -191,7 +197,7 @@ export class SpanHandle {
       parentSpanId: s.parentSpanId,
       agentId: s.agentId,
       taskLabel: s.taskLabel,
-      metadata: s.metadata,
+      metadata: this.opts.metadataOnly ? {} : s.metadata,
       model: (msg && typeof msg.model === 'string' && msg.model) || s.model,
       system: capture ? s.system : null,
       messages: capture ? s.messages : [],
@@ -315,6 +321,14 @@ export class StreamAccumulator {
         break;
     }
   }
+}
+
+/** Error class (and HTTP status, if any) without the message text. */
+export function errorLabel(err: unknown): string {
+  if (err instanceof PolicyViolationError) return `PolicyViolationError: ${err.ruleName}`;
+  const name = err instanceof Error && err.name ? err.name : 'Error';
+  const status = isRecord(err) && typeof err.status === 'number' ? ` (HTTP ${err.status})` : '';
+  return `${name}${status}`;
 }
 
 function int(v: unknown): number {
