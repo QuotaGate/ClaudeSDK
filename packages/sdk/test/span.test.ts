@@ -60,7 +60,7 @@ describe('span capture: non-streaming', () => {
     expect(span.completedAt.getTime()).toBeGreaterThanOrEqual(span.startedAt.getTime());
     expect(span.latencyMs).toBe(span.completedAt.getTime() - span.startedAt.getTime());
     expect(span.latencyMs).toBeGreaterThanOrEqual(20);
-    expect(span.sdkVersion).toBe('0.1.0');
+    expect(span.sdkVersion).toBe('0.1.1');
   });
 
   it('generates a UUID traceId when none is supplied', async () => {
