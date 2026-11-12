@@ -1,8 +1,8 @@
 {
   "name": "@quotagate/sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Operational trust for Claude agents: observability spans, pre-flight policy checks and buffered export for the Anthropic TypeScript SDK.",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "author": "Agentic Loops LLC",
   "homepage": "https://github.com/QuotaGate/ClaudeSDK#readme",
   "repository": {
@@ -47,7 +47,7 @@
   ],
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
@@ -78,8 +78,7 @@
     "vitest": "^5.0.5"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "dependencies": {
     "yaml": "^2.9.1"

@@ -1,8 +1,8 @@
 {
   "name": "quotagate",
   "private": true,
-  "description": "QuotaGate open-source SDKs (monorepo).",
-  "license": "MIT",
+  "description": "QuotaGate SDKs (monorepo). Proprietary to Agentic Loops LLC.",
+  "license": "UNLICENSED",
   "workspaces": [
     "packages/sdk"
   ],

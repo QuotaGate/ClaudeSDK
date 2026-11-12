@@ -5,8 +5,8 @@
     "rootDir": "src",
     "outDir": "dist/esm",
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
+    "declarationMap": false,
+    "sourceMap": false
   },
   "include": ["src"]
 }
