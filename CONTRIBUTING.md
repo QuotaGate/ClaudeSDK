@@ -1,6 +1,8 @@
 # Contributing to QuotaGate
 
-Thanks for your interest in QuotaGate. This repository contains the open-source QuotaGate SDKs.
+This repository contains the QuotaGate SDKs. The code is proprietary to Agentic Loops LLC.
+We do not accept outside contributions. Only people authorised by Agentic Loops LLC may
+contribute, and their contributions are governed by their agreement with Agentic Loops LLC.
 
 ## Layout
 
@@ -12,7 +14,8 @@ packages/
 
 ## Development
 
-Requirements: Node.js 22.12+ (see `.nvmrc`). The published package itself supports Node 18+.
+Requirements: Node.js 22.12+ (see `.nvmrc`). The published package supports Node 22 and later;
+CI tests Node 22 and Node 24.
 
 ```bash
 npm ci              # install (npm workspaces)
@@ -38,8 +41,17 @@ the built ESM and CJS entry points.
 
 ## Releases
 
-Maintainers tag `vX.Y.Z` on `main`; the `Release` workflow publishes `@quotagate/sdk` to npm
-with provenance using the `NPM_TOKEN` repository secret.
+1. Bump `version` in `packages/sdk/package.json` and `SDK_VERSION` in `packages/sdk/src/version.ts`.
+2. Add a section to `CHANGELOG.md`.
+3. Merge to `main` through a pull request.
+4. A repository admin pushes the tag `vX.Y.Z`.
+5. The `Release` workflow runs every check and uploads the package tarball as an artifact.
+6. It then stages the release on npm through trusted publishing (OIDC). No npm token is stored.
+7. A maintainer approves the staged release with npm two-factor authentication.
 
-By contributing you agree your contributions are licensed under the MIT License and that you
-will follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+Tags with a hyphen, such as `v0.2.0-pilot.1`, use the `next` dist-tag instead of `latest`.
+
+The very first npm release is published by hand, because npm trusted publishing needs the
+package to exist first. The workflow detects this and skips staging.
+
+Everyone working in this repository follows the [Code of Conduct](CODE_OF_CONDUCT.md).

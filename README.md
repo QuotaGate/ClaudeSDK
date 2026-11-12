@@ -4,12 +4,15 @@ Operational trust for Claude agents. QuotaGate wraps the Anthropic TypeScript SD
 observability spans, a pre-flight policy engine, and buffered background export, without
 changing how your code calls Claude.
 
-> Status: **`0.1.0`** — first public release (`npm install @quotagate/sdk`). The hosted
-> backend is not part of this repository.
+> Status: **`0.1.1`**. Distributed on npm as `@quotagate/sdk` (`npm install @quotagate/sdk`).
+> Until the first npm release appears, that command returns a 404. Use requires a written
+> agreement with Agentic Loops LLC. The hosted backend is not part of this repository.
+
+Requirements: Node.js 22 or later, and `@anthropic-ai/sdk` >= 0.103.0 as a peer dependency.
 
 ## What exists today
 
-`packages/sdk` contains `@quotagate/sdk` (MIT):
+`packages/sdk` contains `@quotagate/sdk` (proprietary, see [LICENSE](LICENSE)):
 
 - `new QuotaGate(options).wrap(anthropic)`: returns a client with the same type as `Anthropic`.
   `messages.create()` (incl. `stream: true`), `messages.stream()` and `messages.parse()` are
@@ -23,7 +26,8 @@ changing how your code calls Claude.
   `prompt_injection` (regex heuristics, warn by default). Blocking rules throw
   `PolicyViolationError` before any request is sent to Anthropic.
 - Content capture is off by default: exported spans carry no prompts, responses or tool
-  inputs unless you set `captureContent: true` (changed from the earlier default of `true`).
+  inputs unless you set `captureContent: true`. This default changed from `true` to `false`
+  before `0.1.1`; see [CHANGELOG.md](CHANGELOG.md).
 - Track B governance (pre-release, see `packages/sdk/docs/GOVERNANCE.md`): `QuotaGate.init()`
   with a YAML policy file, tool-call guards (`guardTool`, `checkToolCalls`), policy hash and
   version on metadata-only audit events, and signed violation webhooks. There is no
@@ -68,12 +72,16 @@ when exporting (the built-in default is a non-resolving placeholder).
 ```
 packages/sdk          @quotagate/sdk (TypeScript, ESM + CJS)
 packages/sdk-python   planned (Phase 2)
-.github/workflows     ci.yml (lint, typecheck, build, test), release.yml (npm publish on v* tags)
+.github/workflows     ci.yml (lint, typecheck, build, test), release.yml (staged npm publish on v* tags)
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development commands, and
-[SECURITY.md](SECURITY.md) for reporting vulnerabilities.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release steps,
+[SECURITY.md](SECURITY.md) for reporting vulnerabilities, and [CHANGELOG.md](CHANGELOG.md)
+for release notes.
 
 ## License
 
-[MIT](LICENSE) © Agentic Loops LLC
+Proprietary. Copyright © 2026 Agentic Loops LLC. All rights reserved.
+
+No licence is granted except under a written agreement signed by Agentic Loops LLC. See
+[LICENSE](LICENSE). Versions before `0.1.1` were made available under the MIT License.
